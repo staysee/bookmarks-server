@@ -21,12 +21,14 @@ bookmarksRouter
                 .status(400)
                 .send(`Invalid title`)
         }
+
         if (!url){
             logger.error(`URL is required`)
             return res
                 .status(400)
                 .send(`Invalid url`)
         }
+
         if (!rating){
             logger.error(`Rating is required`)
             return res
@@ -82,7 +84,6 @@ bookmarksRouter
     })
     .delete((req, res) => {
         const { id } = req.params
-
         const bookmarkIndex = bookmarks.findIndex( b => b.id == id)
 
         if (bookmarkIndex === -1){

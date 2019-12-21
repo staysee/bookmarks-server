@@ -3,7 +3,7 @@ const bookmarks = [
         id: 1,
         title: 'Thinkful',
         url: 'https://www.thinkful.com/',
-        description: 'Thinkk outisde the classroom',
+        description: 'Think outside the classroom',
         rating: 5
     },
     { 
