@@ -66,7 +66,7 @@ bookmarksRouter
             .json(bookmark);
     })
 
-bookmarksRouuter
+bookmarksRouter
     .route('/bookmarks/:id')
     .get((req, res) => {
         const { id } = req.params
