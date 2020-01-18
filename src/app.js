@@ -14,8 +14,8 @@ const morganOption = (NODE_ENV === 'production')
     : 'common'
 
 app.use(morgan(morganOption))
-app.use(helmet())
 app.use(cors())
+app.use(helmet())
 
 app.use(function validateBearerToken(req, res, next) {
     const apiToken = process.env.API_TOKEN

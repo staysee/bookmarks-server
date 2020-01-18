@@ -152,7 +152,7 @@ describe(`Bookmarks Endpoints`, function() {
         })
     })
 
-    describe.only(`POST /bookmarks`, () => {
+    describe(`POST /bookmarks`, () => {
         it(`creates a bookmark, responding with 201 and the new article`, () => {
             const newBookmark = {
                 title: 'test title',
@@ -181,13 +181,12 @@ describe(`Bookmarks Endpoints`, function() {
                 )
         })
 
-        const requiredFields = ['title', 'url', 'description', 'rating']
+        const requiredFields = ['title', 'url', 'rating']
 
         requiredFields.forEach(field => {
             const newBookmark = {
                 title: 'Test new bookmark',
                 url: 'https://test-url.com',
-                description: 'A test description',
                 rating: 1
             }
 
@@ -204,23 +203,20 @@ describe(`Bookmarks Endpoints`, function() {
             })
         })
 
-        it(`responds with 400 Invalid URL if not a valid URL`, () => {
+        it(`responds with 400 invalid 'url' if not a valid URL`, () => {
             const newBookmarkInvalidUrl = {
-                title: 'test title',
-                url: 'https://invalid',
-                description: 'A test description',
-                rating: 1
+              title: 'test-title',
+              url: 'htp://invalid-url',
+              rating: 1,
             }
-
             return supertest(app)
-                .post('/bookmarks')
-                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                .send(newBookmarkInvalidUrl)
-                .expect(400, {
-                    error: { message: `Invalid url` }
-                })
-
-        })
+              .post(`/bookmarks`)
+              .send(newBookmarkInvalidUrl)
+              .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+              .expect(400, {
+                error: { message: `Invalid url` }
+              })
+          })
 
         it(`responds with 400 invalid rating if not between 0 and 5`, () => {
             const newBookmarkInvalidRating = {
@@ -235,7 +231,7 @@ describe(`Bookmarks Endpoints`, function() {
                 .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                 .send(newBookmarkInvalidRating)
                 .expect(400, {
-                    error: { message: `Invalid rating` }
+                    error: { message: `'rating' must be a number between 0 and 5`}
                 })
 
         })
