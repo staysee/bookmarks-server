@@ -286,4 +286,51 @@ describe(`Bookmarks Endpoints`, function() {
             })
         })
     })
+
+    describe.only(`PATCH /api/bookmarks/:id`, () => {
+        context(`Given no bookmarks`, () => {
+            it(`responds with 404`, () => {
+                const bookmarkId = 123456
+                return supertest(app)
+                    .patch(`/api/bookmarks/${bookmarkId}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .expect(404, { error: { message: `Bookmark doesn't exist`}})
+            })
+        })
+
+        context(`Given there are bookmarks in the database`, () => {
+            const testBookmarks = makeBookmarksArray()
+
+            beforeEach('insert bookmarks', () => {
+                return db
+                    .into('bookmarks')
+                    .insert(testBookmarks)
+            })
+
+            it(`responds with 204 and updates the bookmark`, () => {
+                const idToUpdate = 2
+                const updateBookmark = {
+                    title: 'updated bookmark',
+                    url: 'http://updated-url.com',
+                    description: 'updated description',
+                    rating: 4
+                }
+                const expectedBookmark = {
+                    ...testBookmarks[idToUpdate-1],
+                    ...updateBookmark
+                }
+                return supertest(app)
+                    .patch(`/api/bookmarks/${idToUpdate}`)
+                    .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                    .send(updateBookmark)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get(`/api/bookmarks/${idToUpdate}`)
+                            .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                            .expect(expectedBookmark)
+                    )
+            })
+        })
+    })
 })
