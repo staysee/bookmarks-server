@@ -107,7 +107,7 @@ describe(`Bookmarks Endpoints`, function() {
                 return supertest(app)
                     .get(`/api/bookmarks/${bookmarkId}`)
                     .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .expect(404, { error: { message: `Bookmark not found.`}})
+                    .expect(404, { error: { message: `Bookmark not found`}})
             })
         })
 
@@ -257,7 +257,7 @@ describe(`Bookmarks Endpoints`, function() {
                 return supertest(app)
                     .get(`/api/bookmarks/${bookmarkId}`)
                     .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .expect(404, { error: { message: `Bookmark not found.`} })
+                    .expect(404, { error: { message: `Bookmark not found`} })
             })
         })
 
@@ -287,14 +287,14 @@ describe(`Bookmarks Endpoints`, function() {
         })
     })
 
-    describe.only(`PATCH /api/bookmarks/:id`, () => {
+    describe(`PATCH /api/bookmarks/:id`, () => {
         context(`Given no bookmarks`, () => {
             it(`responds with 404`, () => {
                 const bookmarkId = 123456
                 return supertest(app)
                     .patch(`/api/bookmarks/${bookmarkId}`)
                     .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
-                    .expect(404, { error: { message: `Bookmark doesn't exist`}})
+                    .expect(404, { error: { message: `Bookmark not found`}})
             })
         })
 
@@ -348,8 +348,8 @@ describe(`Bookmarks Endpoints`, function() {
             it(`responds with 204 when updating only a subset of fields`, () => {
                 const idToUpdate = 2
                 const updateBookmark = {
-                    title: 'updated bookmark title'
-                }
+                    title: 'updated bookmark title',
+                  }
                 const expectedBookmark = {
                     ...testBookmarks[idToUpdate-1],
                     ...updateBookmark
@@ -370,6 +370,38 @@ describe(`Bookmarks Endpoints`, function() {
                             .expect(expectedBookmark)
                     )
             })
+
+            it(`responds with 400 invalid 'rating' if not between 0 and 5`, () => {
+                const idToUpdate = 2
+                const updateInvalidRating = {
+                  rating: 'invalid',
+                }
+                return supertest(app)
+                  .patch(`/api/bookmarks/${idToUpdate}`)
+                  .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                  .send(updateInvalidRating)
+                  .expect(400, {
+                    error: {
+                      message: `'rating' must be a number between 0 and 5`
+                    }
+                  })
+              })
+        
+              it(`responds with 400 invalid 'url' if not a valid URL`, () => {
+                const idToUpdate = 2
+                const updateInvalidUrl = {
+                  url: 'htp://invalid-url',
+                }
+                return supertest(app)
+                  .patch(`/api/bookmarks/${idToUpdate}`)
+                  .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                  .send(updateInvalidUrl)
+                  .expect(400, {
+                    error: {
+                      message: `Invalid url`
+                    }
+                  })
+              })
         })
     })
 })

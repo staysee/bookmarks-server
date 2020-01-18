@@ -82,7 +82,7 @@ bookmarksRouter
                 if (!bookmark){
                     logger.error(`Bookmark with id ${id} not found.`)
                     return res.status(404).json({
-                        error: { message: `Bookmark doesn't exist` }
+                        error: { message: `Bookmark not found` }
                     })
                 }
                 res.bookmark = bookmark //save the article for the next middlware
@@ -101,7 +101,7 @@ bookmarksRouter
                     logger.error(`Bookmark with id ${id} not found`)
                     return res
                         .status(404)
-                        .json({ error: { message: `Bookmark not found.` }})
+                        .json({ error: { message: `Bookmark not found` }})
                 }
                 res.json(serializeBookmark(bookmark))
             })
@@ -123,13 +123,29 @@ bookmarksRouter
 
         const numberOfValues = Object.values(bookmarkToUpdate).filter(Boolean).length
         if (numberOfValues === 0) {
+            logger.error(`Invalid update without required fields`)
             return res.status(400).json({
                 error: {
                     message: `Request body must contain either 'title', 'url' or 'rating'`
                 }
             })
         }
+    
         
+        if (rating && !Number.isInteger(rating) || rating < 1 || rating > 5) {
+          logger.error(`Invalid rating '${rating}' supplied`)
+          return res.status(400).json({ 
+              error: { message: `'rating' must be a number between 0 and 5` }
+            })
+        }
+    
+        if (url && !isWebUri(url)) {
+          logger.error(`Invalid url '${url}' supplied`)
+          return res.status(400).json({ 
+              error: { message: `Invalid url` }
+            })
+        }
+
         BookmarksService.updateBookmark(
             req.app.get('db'), req.params.id, bookmarkToUpdate
         )
