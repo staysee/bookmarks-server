@@ -132,18 +132,20 @@ bookmarksRouter
         }
     
         
-        if (rating && !Number.isInteger(rating) || rating < 1 || rating > 5) {
+        const ratingNum = Number(rating)
+    
+        if (!Number.isInteger(ratingNum) || ratingNum < 0 || ratingNum > 5) {
           logger.error(`Invalid rating '${rating}' supplied`)
-          return res.status(400).json({ 
-              error: { message: `'rating' must be a number between 0 and 5` }
-            })
+          return res.status(400).send({
+            error: { message: `'rating' must be a number between 0 and 5` }
+          })
         }
     
-        if (url && !isWebUri(url)) {
+        if (!isWebUri(url)) {
           logger.error(`Invalid url '${url}' supplied`)
-          return res.status(400).json({ 
-              error: { message: `Invalid url` }
-            })
+          return res.status(400).send({
+            error: { message: `Invalid url` }
+          })
         }
 
         BookmarksService.updateBookmark(
