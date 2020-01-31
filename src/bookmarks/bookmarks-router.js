@@ -132,16 +132,17 @@ bookmarksRouter
         }
     
         
-        const ratingNum = Number(rating)
+        // const ratingNum = Number(rating)
     
-        if (!Number.isInteger(ratingNum) || ratingNum < 0 || ratingNum > 5) {
+        if (rating &&
+        (!Number.isInteger(rating) || rating < 0 || rating > 5)) {
           logger.error(`Invalid rating '${rating}' supplied`)
           return res.status(400).send({
             error: { message: `'rating' must be a number between 0 and 5` }
           })
         }
     
-        if (!isWebUri(url)) {
+        if (url && !isWebUri(url)) {
           logger.error(`Invalid url '${url}' supplied`)
           return res.status(400).send({
             error: { message: `Invalid url` }
