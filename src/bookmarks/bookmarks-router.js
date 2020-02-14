@@ -57,16 +57,13 @@ bookmarksRouter
         }
     
         const newBookmark = { title, url, description, rating }
-    
-        BookmarksService.insertBookmark(
-          req.app.get('db'),
-          newBookmark
-        )
+        const knexInstance = req.app.get('db')
+        BookmarksService.insertBookmark(knexInstance, newBookmark)
           .then(bookmark => {
             logger.info(`Bookmark with id ${bookmark.id} created.`)
             res
               .status(201)
-              .location(path.posix.join(req.originalUrl, `${bookmark.id}`))
+              .location(path.posix.join(req.originalUrl, `/${bookmark.id}`))
               .json(serializeBookmark(bookmark))
           })
           .catch(next)
